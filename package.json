@@ -1,0 +1,19 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "\"a shopping platform\"",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "node bamazonCustomer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ballardcz/bamazon.git"
+  },
+  "author": "chris ballard",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ballardcz/bamazon/issues"
+  },
+  "homepage": "https://github.com/ballardcz/bamazon#readme"
+}
