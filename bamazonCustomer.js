@@ -9,8 +9,10 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
+var err;
+
 connection.connect(function (err) {
-    if (err) throw err;
+    if (err){ throw err};
     console.log("connected as id: " + connection.threadId);
     // connection.query("SELECT product_id,product_name,price FROM bamazon.products", function (err, res) {
     //     console.log(res);
@@ -45,7 +47,7 @@ function start() {
                     for (var i = 0; i < res.length; i++) {
                         if (res[i].product_id == answer.choice) {
                             var idnumb = res[i];
-                            inquirer.prompt({
+                            inquirer.prompt([{
                                 name: "howMany",
                                 message: "How many units would you like to purchase?",
                                 type: "input",
@@ -56,7 +58,7 @@ function start() {
                                         return false;
                                     }
                                 }
-                            }).then(function (answer) {
+                            }]).then(function (answer) {
                                 if (idnumb.stock_quantity <= parseInt(answer.howMany)) {
                                     connection.query("UPDATE bamazon.products SET ? WHERE ?", [{
                                         stock_quantity: answer.howMany
