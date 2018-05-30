@@ -12,52 +12,105 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id: " + connection.threadId);
-    connection.query("SELECT product_id,product_name,price FROM bamazon.products", function(err,res){
-        console.log(res);
+    // connection.query("SELECT product_id,product_name,price FROM bamazon.products", function (err, res) {
+    //     console.log(res);
+
+    // });
     start();
-});
-});
+})
 
 function start() {
 
-    inquirer.prompt({
-        message: "Hi! Would you like to order anything?",
-        name: "PlaceAnOrder",
-        type: "list",
-        choices: ["YES", "NO"]
-    }).then(function (answer) {
-        if (answer.PlaceAnOrder.toUpperCase() == "Yes") {
-            placeOrder();
-        } else {
-            //console.log ("Goodbye!")
-        }
-    });
+    // var numId;
+    // var howMany;
 
-    var numberId = "";
-    var howMany;
+    connection.query("SELECT product_id,product_name,price FROM bamazon.products", function (err, res) {
+            console.log(res);
+    
+            inquirer.prompt([{
+                name: "numId",
+                type: "input",
 
-    function placeOrder() {
-
-        function validate$(howMany) {
-            var reg = /^\d+$/;
-   return reg.test(howMany) || "How many units are you purchasing?whats the product id number?";
-            // var isValid = !_.isNaN(parseFloat(howMany));
-            // return isValid || "How many units are you purchasing?whats the product id number?";
-        }
-
-        var questions = [{
+                choices: function (value) {
+                    var idnum = [];
+                    for (var i = 0; i < res.length; i++) {
+                        idnum.push(res[i].product_id);
+                        // & res[i].product_name & res[i].price);
+                    }
+                    return idnum;
+                },
                 message: "What's the id number of the product you would like to purchase? example: #1 , #13, or #345",
-                type: "input",
-                name: "howMany",
-                validate: validate$
-            },
-            {
-                message: "What's your age?",
-                type: "input",
-                name: "age",
-                validate: validate$
-            },
-        ];
-        
-    };inquirer.prompt(questions);
+                // validate: validate$
+            }]).then(function (answer) {
+                    for (var i = 0; i < res.length; i++) {
+                        if (res[i].product_id == answer.choice) {
+                            var idnumb = res[i];
+                            inquirer.prompt({
+                                name: "howMany",
+                                message: "How many units would you like to purchase?",
+                                type: "input",
+                                validate: function (value) {
+                                    if (isNaN(value) == false) {
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
+                                }
+                            }).then(function (answer) {
+                                if (idnumb.stock_quantity <= parseInt(answer.howMany)) {
+                                    connection.query("UPDATE bamazon.products SET ? WHERE ?", [{
+                                        stock_quantity: answer.howMany
+                                    }, {
+                                        product_id: idnumb.product_id
+                                    }], function (err, res) {
+                                        console.log("Your order has been placed!");
+                                    })
+                                }
+                            })
+                        };
+                        // & res[i].product_name
+                        // inquirer.prompt({
+                        //     message: "How many units would you like to purchase?",
+                        //     type: "input",
+                        //     name: "howMany",
+                        //     validate: function (value) {
+                        //         if (isNaN(value) == false) {
+                        //             return true;
+                        //         } else {
+                        //             return false;
+                        //         }
+                        //     }
+                        // });
+                        // .then(function (answer) {
+                        //     connection.query("Select 
+                        // })
+                    } }
+                ) }
+            ) }
+            
+   // })
+// end();
+//}
+// inquirer.prompt({
+//     message: "Hi! Would you like to order anything?",
+//     name: "PlaceAnOrder",
+//     type: "rawlist",
+//     choices: ["YES", "NO"]
+// }).then(function(answer) {
+//     if (answer.PlaceAnOrder.toUppercase() == "YES") {
+//         placeOrder();
+//     } else if (answer.PlaceAnOrder.toUppercase() == "NO"){ 
+//         end();
+//         //console.log ("Goodbye!")
+//     }
+//     else { console.log("try again!");
+//     start();
+//     }
+
+// });
+
+function end() {
+    // this logs a goodbye and exits node safely
+    console.log("Goodbye!");
+    process.exit(0);
 }
